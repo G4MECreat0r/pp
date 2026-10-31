@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="お子ちゃま">
+<title>お子ちゃまロック｜17時になったらスマホは終わり</title>
+<style>
+  :root{ --y:#ffd400; --k:#0b0b0b; --r:#ff2d55; }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:#fff; color:#111;
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    font-size:15px; line-height:1.7;
+  }
+  @media (prefers-color-scheme:dark){
+    body{ background:#111; color:#eee; }
+    .card{ background:#191919 !important; border-color:#2a2a2a !important; color:#eee; }
+    input[type=text]{ background:#0d0d0d !important; color:#eee; }
+    pre.out{ background:#0d0d0d !important; }
+    .opt{border-color:#2a2a2a}
+    footer{color:#777}
+    .kbd{background:#222;border-color:#333}
+  }
+  .wrap{ max-width:640px; margin:0 auto; padding:34px 20px 60px; }
+  .tape{
+    display:inline-block; background:var(--y); color:#111;
+    font-weight:700; font-size:12px; letter-spacing:.14em;
+    padding:4px 12px; margin-bottom:14px;
+    clip-path:polygon(0 0,100% 0,97% 50%,100% 100%,0 100%,3% 50%);
+  }
+  h1{ font-size:40px; line-height:1.05; margin:0 0 10px; font-weight:700; letter-spacing:-.02em; }
+  h1 .small{ display:block; font-size:13px; font-weight:500; letter-spacing:.2em; color:#888; margin-bottom:8px; }
+  .sub{ color:#777; margin:0 0 26px; font-size:14px; }
+  .card{ background:#f7f7f7; border:1px solid #e5e5e5; border-radius:14px; padding:18px; margin-bottom:14px; }
+  .card h2{ font-size:13px; font-weight:700; letter-spacing:.12em; margin:0 0 12px; color:#888; }
+  .card p{ margin:0 0 10px; }
+  .card p:last-child{ margin-bottom:0; }
+  label.fld{ display:block; font-size:12px; color:#888; margin-bottom:6px; }
+  input[type=text]{
+    width:100%; padding:11px 12px; border-radius:9px; font-size:14px;
+    background:#fff; color:#111; border:1px solid #ddd;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  input[type=text]:focus{ outline:none; border-color:#999; }
+  .opts{ margin:14px 0 4px; }
+  .opt{
+    display:flex; align-items:center; gap:10px; padding:9px 0;
+    border-bottom:1px dashed #ddd; font-size:14px; cursor:pointer;
+  }
+  .opt:last-child{ border-bottom:0; }
+  .opt input{ width:18px; height:18px; accent-color:#111; flex:0 0 auto; }
+  .opt span small{ display:block; font-size:11px; color:#888; line-height:1.4; }
+  button{ font-family:inherit; cursor:pointer; border-radius:10px; font-weight:700; border:0; font-size:15px; }
+  .btn-main{ width:100%; padding:15px; background:var(--y); color:#111; margin-top:16px; font-size:16px; }
+  .btn-main:active{ transform:translateY(1px); }
+  .btn-ghost{ width:100%; padding:11px; margin-top:8px; background:transparent; color:#888; border:1px solid #ddd; font-weight:500; font-size:13px; }
+  pre.out{
+    margin-top:10px; padding:12px; border-radius:9px; overflow-x:auto;
+    background:#f0f0f0; font-size:11px; line-height:1.5;
+    font-family:ui-monospace,Menlo,monospace; max-height:280px;
+  }
+  ol.steps{ margin:0; padding-left:20px; }
+  ol.steps li{ margin-bottom:12px; }
+  ol.steps li b{ display:block; }
+  ol.steps li small{ color:#888; font-size:12px; }
+  .warn{ border-color:var(--r); }
+  .warn h2{ color:var(--r); }
+  .warn ul{ margin:0; padding-left:18px; font-size:13.5px; }
+  .warn li{ margin-bottom:8px; }
+  .kbd{ display:inline-block; padding:1px 6px; border-radius:5px; font-size:12px; background:#eee; border:1px solid #ddd; font-family:ui-monospace,Menlo,monospace; }
+  footer{ margin-top:22px; font-size:12px; color:#999; text-align:center; }
+  footer a{ color:inherit; }
+
+  .lockview{
+    background:#0b0b0b; color:#fff; border-radius:18px; overflow:hidden;
+    padding:34px 22px 26px; text-align:center; position:relative;
+    border:1px solid #222; min-height:560px;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .lockview::before{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(45deg,rgba(255,212,0,.05) 0 14px,transparent 14px 28px);
+  }
+  .clock{ font-size:15px; letter-spacing:.3em; color:var(--y); font-weight:700; margin-bottom:26px; position:relative; }
+  .lockmsg{ margin:0 0 20px; position:relative; }
+  .lockmsg p{ margin:0; font-weight:700; line-height:1.15; letter-spacing:-.01em; }
+  .l1{ font-size:20px; color:#8a8a8a; }
+  .l2,.l3{ font-size:32px; }
+  .l3 .or{ color:var(--y); }
+  .taunt{ font-size:13.5px; color:#9a9a9a; min-height:44px; margin:0 0 22px; line-height:1.6; position:relative; }
+  .lockbtns{ display:flex; gap:10px; justify-content:center; position:relative; }
+  .lockbtns button{ padding:12px 22px; font-size:14px; }
+  .lb1{ background:var(--y); color:#111; }
+  .lb2{ background:#1c1c1c; color:#fff; }
+  .timer{ margin-top:20px; font-size:52px; font-weight:700; font-family:ui-monospace,Menlo,monospace; color:var(--y); }
+  .timer.sm{ font-size:26px; }
+  .cap{ font-size:11px; letter-spacing:.2em; color:#8a8a8a; margin-top:6px; }
+  .back{ position:absolute; top:14px; right:16px; font-size:11px; color:#666; background:none; border:0; letter-spacing:.1em; }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="siteView">
+  <div class="tape">17:00 強制終了</div>
+  <h1><span class="small">OHCHAMA LOCK</span>お子ちゃま<br>ロック</h1>
+  <p class="sub">17時になったら、スマホはもうお子ちゃまのものじゃない。勉強するか、寝るか。以上。</p>
+
+  <div class="card">
+    <h2>なにこれ</h2>
+    <p>iPhone に構成プロファイルを入れて、17時以降のスマホを<b>ただの光る板</b>に近づけるサイトです。プロファイルはこの場で生成されます。サーバーは通りません。</p>
+    <p>あわせて、ホーム画面に<b>「お子ちゃま」アイコン</b>を置きます。開くと全画面で「お子ちゃまはもうスマホをやめて勉強するか寝ましょう」と出ます。</p>
+  </div>
+
+  <div class="card">
+    <h2>プロファイルをつくる</h2>
+    <label class="fld" for="baseUrl">このサイトのURL（アイコンの飛び先）</label>
+    <input type="text" id="baseUrl" placeholder="https://example.github.io/ochama-lock/">
+    <div class="opts" id="opts">
+      <label class="opt"><input type="checkbox" checked data-k="safari"><span>Safari を封鎖<small>ダウンタイム中でもブラウザで抜けられる穴を塞ぐ</small></span></label>
+      <label class="opt"><input type="checkbox" checked data-k="store"><span>App Store・アプリ内課金を封鎖<small>「ゲーム入れたい」を潰す</small></span></label>
+      <label class="opt"><input type="checkbox" checked data-k="camera"><span>カメラを封鎖<small>動画撮影に逃げるのを防ぐ</small></span></label>
+      <label class="opt"><input type="checkbox" checked data-k="siri"><span>Siri・音声入力を封鎖<small>「Hey Siri、YouTube 開いて」を潰す</small></span></label>
+      <label class="opt"><input type="checkbox" checked data-k="shot"><span>スクリーンショットを封鎖<small>撮って親に送るのも禁止</small></span></label>
+      <label class="opt"><input type="checkbox" checked data-k="clip"><span>ホーム画面に「お子ちゃま」アイコンを置く<small>全画面の説教画面が開きます</small></span></label>
+    </div>
+    <button class="btn-main" id="dlBtn">構成プロファイルをダウンロード</button>
+    <button class="btn-ghost" id="txtBtn">ダウンロードできない時（中身を表示）</button>
+    <pre class="out" id="out" hidden></pre>
+  </div>
+
+  <div class="card">
+    <h2>手順</h2>
+    <ol class="steps">
+      <li><b>iPhone の Safari でこのページを開く</b><small>Chrome だとインストール画面が出ないことがあります。</small></li>
+      <li><b>上のボタンでプロファイルを落とす</b><small>「構成プロファイルがダウンロードされました」と出ます。</small></li>
+      <li><b>設定 → 一般 → VPN とデバイス管理</b><small>ダウンロード済みをタップ →「インストール」→ パスコード。</small></li>
+      <li><b>設定 → スクリーンタイム → ダウンタイム</b><small>ここが本命です。<span class="kbd">17:00</span> 〜 <span class="kbd">翌 7:00</span> に設定。「ダウンタイム中は常に許可」は電話だけに。</small></li>
+      <li><b>設定 → スクリーンタイム → コンテンツとプライバシーの制限</b><small>「アカウント変更」をオフ。これでダウンタイムを自分で解除できなくなります。パスコードは親が握る。</small></li>
+    </ol>
+  </div>
+
+  <div class="card warn">
+    <h2>先に言っておく穴</h2>
+    <ul>
+      <li><b>プロファイル単体では時間で止まりません。</b>iOS の構成プロファイルに「17時に発動」という項目が存在しないためです。時間で自動的に止めるのは<b>ダウンタイム</b>の役割で、プロファイルはその抜け穴（Safari・App Store・Siri）を塞ぐ係です。両方セットで使ってください。</li>
+      <li><b>設定アプリは消せません。</b>ダウンタイム中でも開けます。スクリーンタイムのパスコードを別の4桁にして本人に知らせないのが実質的な鍵です。</li>
+      <li><b>プロファイルは手動で消せます。</b>「アカウント変更」をオフにしておくと、消すのにスクリーンタイムのパスコードが要ります。</li>
+      <li><b>17時より前に始めた動画は止まりません。</b>ダウンタイムはアプリの起動を止める仕組みで、再生中のストリームは切れません。</li>
+      <li><b>プロファイルを消されると元に戻ります。</b>再起動では維持されます。</li>
+    </ul>
+  </div>
+
+  <footer>生成はすべて端末内で完結します / <a href="#lock" id="previewLink">説教画面をプレビュー</a></footer>
+</div>
+
+<div class="wrap" id="lockView" hidden>
+  <div class="lockview">
+    <button class="back" id="backBtn">もどる</button>
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="lockmsg">
+      <p class="l1">お子ちゃまはもう</p>
+      <p class="l2">スマホをやめて</p>
+      <p class="l3">勉強するか<span class="or">寝</span>ましょう</p>
+    </div>
+    <p class="taunt" id="taunt"></p>
+    <div class="lockbtns">
+      <button class="lb1" id="studyBtn">勉強する</button>
+      <button class="lb2" id="sleepBtn">寝る</button>
+    </div>
+    <div id="extra"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(s){ return document.querySelector(s); };
+  var siteView = $('#siteView'), lockView = $('#lockView');
+
+  function route(){
+    var lock = location.hash === '#lock';
+    siteView.hidden = lock;
+    lockView.hidden = !lock;
+    if(lock) startLock();
+  }
+  window.addEventListener('hashchange', route);
+
+  var taunts = [
+    'いま開いても、見るものはもう無い。',
+    'その指、もう一度スワイプしても同じ画面だよ。',
+    '17時を過ぎたスマホは、ただの光る板。',
+    'YouTube は明日のあなたを待ってくれない。',
+    '通知の数だけ賢くなった気がする。だいたい嘘。',
+    'ここまで来たなら、あと5分だけやれば終わる。',
+    '電池は残ってる。あなたの集中は？',
+    '画面を閉じる。それが今日の宿題。',
+    '親はもう、あなたが開いてるのを知ってる。'
+  ];
+  var lockOn = false;
+
+  function startLock(){
+    if(lockOn) return;
+    lockOn = true;
+    $('#taunt').textContent = taunts[Math.floor(Math.random()*taunts.length)];
+    tickClock();
+    setInterval(tickClock, 1000);
+  }
+  function tickClock(){
+    var d = new Date(), p = function(n){ return ('0'+n).slice(-2); };
+    $('#clock').textContent = p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  }
+  $('#backBtn').onclick = function(){ location.hash = ''; };
+  $('#previewLink').onclick = function(e){ e.preventDefault(); location.hash = '#lock'; route(); };
+
+  var tm;
+  $('#studyBtn').onclick = function(){
+    var end = Date.now() + 25*60*1000;
+    $('#extra').innerHTML = '<div class="timer" id="tm">25:00</div><div class="cap">25分。それだけ。</div>';
+    clearInterval(tm);
+    tm = setInterval(function(){
+      var left = Math.max(0, end - Date.now());
+      var el = $('#tm'); if(!el) return clearInterval(tm);
+      if(left === 0){ el.textContent = '終わり'; clearInterval(tm); return; }
+      el.textContent = Math.floor(left/60000) + ':' + ('0'+Math.floor(left%60000/1000)).slice(-2);
+    }, 250);
+  };
+  $('#sleepBtn').onclick = function(){
+    var d = new Date(); d.setHours(d.getHours()+8, 0, 0, 0);
+    $('#extra').innerHTML = '<div class="timer sm">' + ('0'+d.getHours()).slice(-2) + ':00 起床</div><div class="cap">8時間。おやすみ。</div>';
+  };
+
+  /* ---------- profile ---------- */
+  function uid(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID().toUpperCase();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+      var r = Math.random()*16|0;
+      return (c === 'x' ? r : (r&0x3|0x8)).toString(16);
+    }).toUpperCase();
+  }
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function chosen(){
+    var o = {};
+    document.querySelectorAll('#opts input').forEach(function(c){ o[c.dataset.k] = c.checked; });
+    return o;
+  }
+  function lockUrl(){
+    var raw = $('#baseUrl').value.trim() || (location.origin + location.pathname);
+    raw = raw.replace(/#.*$/,'');
+    if(!/\/$/.test(raw) && !/\.html?$/.test(raw)) raw += '/';
+    return raw + '#lock';
+  }
+
+  function makeIcon(){
+    try{
+      var c = document.createElement('canvas');
+      c.width = c.height = 180;
+      var x = c.getContext('2d');
+      x.fillStyle = '#ffd400'; x.fillRect(0,0,180,180);
+      x.fillStyle = '#0b0b0b';
+      x.font = '700 100px -apple-system,"Hiragino Sans",sans-serif';
+      x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillText('お', 90, 78);
+      x.fillRect(0, 140, 180, 40);
+      x.fillStyle = '#ffd400';
+      x.font = '700 28px ui-monospace,monospace';
+      x.fillText('17:00', 90, 161);
+      return c.toDataURL('image/png').split(',')[1];
+    }catch(e){ return null; }
+  }
+
+  function build(){
+    var o = chosen(), body = [];
+
+    var r = [];
+    if(o.safari) r.push(['allowSafari', false]);
+    if(o.store){ r.push(['allowiTunes', false]); r.push(['allowInAppPurchases', false]); }
+    if(o.camera) r.push(['allowCamera', false]);
+    if(o.siri){ r.push(['allowAssistant', false]); r.push(['allowAssistantUserGeneratedContent', false]); }
+    if(o.shot) r.push(['allowScreenShot', false]);
+    r.push(['allowAppRemoval', false]);
+    r.push(['allowAirDrop', false]);
+    r.push(['allowGameCenter', false]);
+    r.push(['allowMultiplayerGaming', false]);
+    r.push(['allowExplicitContent', false]);
+    r.push(['forceITunesStorePasswordEntry', true]);
+    r.push(['ratingRegion', 'jp']);
+    r.push(['allowVoiceDialing', true]);
+
+    var restr = [
+      '<dict>',
+      '<key>PayloadType</key><string>com.apple.applicationaccess</string>',
+      '<key>PayloadIdentifier</key><string>jp.ochama.lock.restrictions</string>',
+      '<key>PayloadUUID</key><string>' + uid() + '</string>',
+      '<key>PayloadVersion</key><integer>1</integer>',
+      '<key>PayloadDisplayName</key><string>お子ちゃまロック（制限）</string>'
+    ];
+    r.forEach(function(kv){
+      restr.push('<key>' + kv[0] + '</key>' + (kv[1] === true ? '<true/>' : kv[1] === false ? '<false/>' : '<string>' + esc(kv[1]) + '</string>'));
+    });
+    restr.push('</dict>');
+    body.push(restr.join('\n'));
+
+    if(o.clip){
+      var clip = [
+        '<dict>',
+        '<key>PayloadType</key><string>com.apple.webClip.managed</string>',
+        '<key>PayloadIdentifier</key><string>jp.ochama.lock.clip</string>',
+        '<key>PayloadUUID</key><string>' + uid() + '</string>',
+        '<key>PayloadVersion</key><integer>1</integer>',
+        '<key>PayloadDisplayName</key><string>お子ちゃま</string>',
+        '<key>Label</key><string>お子ちゃま</string>',
+        '<key>URL</key><string>' + esc(lockUrl()) + '</string>',
+        '<key>IsRemovable</key><false/>',
+        '<key>FullScreen</key><true/>'
+      ];
+      var icon = makeIcon();
+      if(icon) clip.push('<key>Icon</key><data>' + icon + '</data>');
+      clip.push('</dict>');
+      body.push(clip.join('\n'));
+    }
+
+    return '<?xml version="1.0" encoding="UTF-8"?>\n'
+      + '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n'
+      + '<plist version="1.0">\n<dict>\n'
+      + '<key>PayloadContent</key>\n<array>\n' + body.join('\n') + '\n</array>\n'
+      + '<key>PayloadDisplayName</key><string>お子ちゃまロック</string>\n'
+      + '<key>PayloadIdentifier</key><string>jp.ochama.lock</string>\n'
+      + '<key>PayloadOrganization</key><string>お子ちゃまロック</string>\n'
+      + '<key>PayloadDescription</key><string>17時以降お子ちゃまにスマホを渡さないための構成プロファイル。</string>\n'
+      + '<key>PayloadType</key><string>Configuration</string>\n'
+      + '<key>PayloadUUID</key><string>' + uid() + '</string>\n'
+      + '<key>PayloadVersion</key><integer>1</integer>\n'
+      + '<key>PayloadRemovalDisallowed</key><false/>\n'
+      + '</dict>\n</plist>\n';
+  }
+
+  var MIME = 'application/x-apple-aspen-config';
+
+  $('#dlBtn').onclick = function(){
+    var xml = build();
+    var btn = $('#dlBtn');
+    try{
+      var blob = new Blob([xml], {type: MIME});
+      if(window.navigator && navigator.msSaveOrOpenBlob){ navigator.msSaveOrOpenBlob(blob, 'ochama-lock.mobileconfig'); return; }
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'ochama-lock.mobileconfig';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 10000);
+      btn.textContent = '落としました → 設定 → 一般 → VPN とデバイス管理';
+      setTimeout(function(){ btn.textContent = '構成プロファイルをダウンロード'; }, 5000);
+    }catch(e){
+      var p = $('#out'); p.hidden = false; p.textContent = xml;
+      btn.textContent = '生成しました（下の中身を保存してください）';
+    }
+  };
+
+  $('#txtBtn').onclick = function(){
+    var p = $('#out');
+    p.hidden = !p.hidden;
+    if(!p.hidden) p.textContent = build();
+  };
+
+  $('#baseUrl').value = (location.origin + location.pathname).replace(/#.*$/,'');
+  route();
+})();
+</script>
+</body>
+</html>
